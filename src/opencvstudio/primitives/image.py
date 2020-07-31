@@ -1,11 +1,9 @@
 from dataclasses import dataclass
-from typing import Optional, Tuple
+from typing import Tuple
 
 import numpy
+from opencvstudio.dataops import convert_color
 from opencvstudio.primitives.color import ColorSpace
-
-
-ImageData = numpy.ndarray
 
 
 class Image:
@@ -46,6 +44,14 @@ class Image:
         :return: Data of image
         """
         return self._color
+
+    def convert_color(self, color: ColorSpace) -> "Image":
+        if self._color != color:
+            return Image(
+                convert_color(self._data, self._color, ColorSpace.RGB),
+                ColorSpace.RGB)
+        else:
+            return self
 
 
 @dataclass(frozen=True)

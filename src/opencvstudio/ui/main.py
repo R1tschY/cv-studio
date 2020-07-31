@@ -1,10 +1,10 @@
-from gi.repository import Gio, Gtk
+from gi.repository import GLib, GdkPixbuf, Gio, Gtk
 
 
 # list of tuples for each software, containing the software name, initial release, and main programming languages used
 from opencvstudio.dataops import open_image
 from opencvstudio.engine import Engine
-from opencvstudio.gtkhelper import run_dialog
+from opencvstudio.ui.gtkhelper import run_dialog
 from opencvstudio.opmodel import OperationContext
 from opencvstudio.ops.box_ops import CropOp
 from opencvstudio.primitives import Box
@@ -90,7 +90,8 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def on_cut_op(self, a, b):
         print(f"on_cut_op({a}, {b})")
-        self.liststore.append(CropOp(Box(50, 50, 100, 100)))
+        self.liststore.append(CropOp(Box(50, 50, 500, 500)))
+        self.update_image()
 
     def on_open_image(self, action, params):
         dialog = Gtk.FileChooserDialog(
@@ -105,7 +106,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
         with run_dialog(dialog) as response:
             if response == Gtk.ResponseType.OK:
-                self.engine.set_input(
+                self.set_test_input(
                     Image(open_image(dialog.get_filename()), ColorSpace.BGR))
             elif response == Gtk.ResponseType.CANCEL:
                 print("Cancel clicked")
@@ -114,3 +115,28 @@ class MainWindow(Gtk.ApplicationWindow):
         model, treeiter = selection.get_selected()
         if treeiter is not None:
             print("You selected", model[treeiter][0])
+
+        self.update_image(treeiter)
+
+    def set_test_input(self, image: Image):
+        if image is not None:
+            self.engine.set_input(image)
+
+            self.update_image()
+
+    def update_image(self, selection=None):
+        self.engine.update()
+
+        if selection is None:
+            output = self.engine.output
+        else:
+            output = None
+
+        if output is not None:
+            img = output.convert_color(ColorSpace.RGB)
+            # TODO: new_from_data
+            bytes = GLib.Bytes.new(output.data.tobytes())
+            pixbuf = GdkPixbuf.Pixbuf.new_from_bytes(
+                bytes, GdkPixbuf.Colorspace.RGB, False, 8,
+                img.size[1], img.size[0], img.size[1] * 3)
+            self.view.set_from_pixbuf(pixbuf)

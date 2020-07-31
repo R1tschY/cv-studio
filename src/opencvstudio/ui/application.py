@@ -1,5 +1,5 @@
-from gi.repository import GLib, Gio, Gtk
-from opencvstudio.main import MainWindow
+from gi.repository import Gio, Gtk
+from opencvstudio.ui.main import MainWindow
 
 
 class Application(Gtk.Application):

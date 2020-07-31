@@ -1,9 +1,15 @@
+from dataclasses import dataclass
+
+from opencvstudio.dataops import crop
 from opencvstudio.opmodel import Operation, OperationContext, Parameter
 from opencvstudio.primitives.image import Image
 from opencvstudio.primitives import Box
 
 
+@dataclass
 class CropOp(Operation):
+
+    box: Box
 
     @classmethod
     def parameters(cls):
@@ -11,10 +17,7 @@ class CropOp(Operation):
             Parameter("box", Box, lambda img: Box.from_size(img.size))
         ]
 
-    def __init__(self, box: Box):
-        self.box = box
-
     def execute(self, ctx: OperationContext, img: Image) -> Image:
-        return img.cut(self.box)
+        return img.replace_data(crop(img.data, self.box))
 
 
