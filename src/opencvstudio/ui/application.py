@@ -1,5 +1,5 @@
 from gi.repository import Gio, Gtk
-from opencvstudio.ui.main import MainWindow
+from opencvstudio.ui.mainwindow import MainWindow
 
 
 class Application(Gtk.Application):
@@ -37,9 +37,9 @@ class Application(Gtk.Application):
         # convert GVariantDict -> GVariant -> dict
         options = options.end().unpack()
 
-        if "test" in options:
+        if "tests" in options:
             # This is printed on the main instance
-            print("Test argument recieved: %s" % options["test"])
+            print("Test argument recieved: %s" % options["tests"])
 
         self.activate()
         return 0

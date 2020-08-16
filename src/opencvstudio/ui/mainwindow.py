@@ -10,6 +10,7 @@ from opencvstudio.ops.box_ops import CropOp
 from opencvstudio.primitives import Box
 from opencvstudio.primitives.color import ColorSpace
 from opencvstudio.primitives.image import Image
+from opencvstudio.ui.imageview import ImageView
 from opencvstudio.ui.opstore import OpStore
 from opencvstudio.version import PRODUCT_NAME
 
@@ -34,16 +35,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
         self._init_actions()
 
-        # a menu with two actions
-        menumodel = Gio.Menu()
-        menumodel.append("Open image", "win.open-image")
-        menumodel.append("About", "win.about")
-        menumodel.append("Quit", "app.quit")
-
-        # a submenu with one action for the menu
-        submenu = Gio.Menu()
-        submenu.append("Cut", "win.add-cut")
-        menumodel.append_submenu("Operations", submenu)
+        menumodel = self.create_main_menu()
 
         # the menu is set as the menu of the menubutton
         menubutton.set_menu_model(menumodel)
@@ -66,17 +58,34 @@ class MainWindow(Gtk.ApplicationWindow):
         self.sidebar.set_position(200)
 
         # Test-View
-        self.view = Gtk.Image()
+        self.view = ImageView()
+        self.view.set_size_request(width=400, height=400)
 
         self.scrollable_treelist = Gtk.ScrolledWindow()
         self.scrollable_treelist.set_vexpand(True)
-        self.sidebar.add1(self.scrollable_treelist)
-        self.sidebar.add2(self.view)
-
         self.scrollable_treelist.add(self.treeview)
+        self.sidebar.add1(self.scrollable_treelist)
+
+        self.scrollable_view = Gtk.ScrolledWindow()
+        self.scrollable_view.set_vexpand(True)
+        self.scrollable_view.set_hexpand(True)
+        self.scrollable_view.add(self.view)
+        self.sidebar.add2(self.scrollable_view)
 
         self.add(self.sidebar)
         self.show_all()
+
+    def create_main_menu(self):
+        menumodel = Gio.Menu()
+        menumodel.append("Open image", "win.open-image")
+        menumodel.append("About", "win.about")
+        menumodel.append("Quit", "app.quit")
+
+        submenu = Gio.Menu()
+        submenu.append("Cut", "win.add-cut")
+        menumodel.append_submenu("Operations", submenu)
+
+        return menumodel
 
     def _init_actions(self):
         # Cut
@@ -95,7 +104,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def on_open_image(self, action, params):
         dialog = Gtk.FileChooserDialog(
-            title="Choose image to use as test", parent=self,
+            title="Choose image to use as tests", parent=self,
             action=Gtk.FileChooserAction.OPEN)
         dialog.add_buttons(
             Gtk.STOCK_CANCEL,

@@ -6,12 +6,16 @@ authors = ["R1tschY <r1tschy@posteo.de>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-opencv-python = "^4.3.0"
+numpy = "^1.19.1"
+opencv-python-headless = "^4.3.0"
 pytesseract = "^0.3.4"
 PyGObject = "^3.36.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.3"
+
+# pyhotreload
+watchdog = "^0.10"
 
 [build-system]
 requires = ["poetry>=0.12"]

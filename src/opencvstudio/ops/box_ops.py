@@ -20,4 +20,7 @@ class CropOp(Operation):
     def execute(self, ctx: OperationContext, img: Image) -> Image:
         return img.replace_data(crop(img.data, self.box))
 
+    def __str__(self):
+        return f"Crop {self.box}"
+
 
